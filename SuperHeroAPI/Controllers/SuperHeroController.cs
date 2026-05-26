@@ -33,18 +33,18 @@ namespace SuperHeroAPI.Controllers
         public async Task<ActionResult<List<SuperHero>>> AddHero(SuperHero hero)
         {
             _context.SuperHeroes.Add(hero);
-            hero.SuperPower = request.SuperPower;
+            hero.SuperPower = hero.SuperPower;
 
             return Ok(await _context.SuperHeroes.ToListAsync());
         }
 
         [HttpPut]
-        public async Task<ActionResult<List<SuperHero>>> UpdateHero(SuperHero request)
+        public async Task<ActionResult<List<SuperHero>>> UpdateHero(SuperHero hero)
         {
-            var dbHero = await _context.SuperHeroes.FindAsync(request.Id);
+            var dbHero = await _context.SuperHeroes.FindAsync(hero.Id);
             if (dbHero == null)
                 return BadRequest("Hero not found.");
-            dbHero.SuperPower = request.SuperPower;
+            dbHero.SuperPower = hero.SuperPower;
 
             await _context.SaveChangesAsync();
 
