@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SuperHeroAPI.Controllers
@@ -33,7 +33,7 @@ namespace SuperHeroAPI.Controllers
         public async Task<ActionResult<List<SuperHero>>> AddHero(SuperHero hero)
         {
             _context.SuperHeroes.Add(hero);
-            await _context.SaveChangesAsync();
+            hero.SuperPower = request.SuperPower;
 
             return Ok(await _context.SuperHeroes.ToListAsync());
         }
@@ -44,11 +44,7 @@ namespace SuperHeroAPI.Controllers
             var dbHero = await _context.SuperHeroes.FindAsync(request.Id);
             if (dbHero == null)
                 return BadRequest("Hero not found.");
-
-            dbHero.Name = request.Name;
-            dbHero.FirstName = request.FirstName;
-            dbHero.LastName = request.LastName;
-            dbHero.Place = request.Place;
+            dbHero.SuperPower = request.SuperPower;
 
             await _context.SaveChangesAsync();
 
