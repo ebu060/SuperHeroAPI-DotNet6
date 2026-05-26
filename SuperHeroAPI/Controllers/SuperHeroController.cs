@@ -68,6 +68,5 @@ namespace SuperHeroAPI.Controllers
 
             return Ok(await _context.SuperHeroes.ToListAsync());
         }
-
     }
 }
