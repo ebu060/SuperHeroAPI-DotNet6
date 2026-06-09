@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SuperHeroAPI.Controllers
@@ -30,13 +30,13 @@ namespace SuperHeroAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<SuperHero>>> AddHero(SuperHero hero)
-        {
-            _context.SuperHeroes.Add(hero);
-            await _context.SaveChangesAsync();
+public async Task<ActionResult<List<SuperHero>>> AddHero(SuperHero hero)
+{
+    _context.SuperHeroes.Add(hero);
+    await _context.SaveChangesAsync();
 
-            return Ok(await _context.SuperHeroes.ToListAsync());
-        }
+    return Ok(await _context.SuperHeroes.ToListAsync());
+}
 
         [HttpPut]
         public async Task<ActionResult<List<SuperHero>>> UpdateHero(SuperHero request)
@@ -49,6 +49,7 @@ namespace SuperHeroAPI.Controllers
             dbHero.FirstName = request.FirstName;
             dbHero.LastName = request.LastName;
             dbHero.Place = request.Place;
+            dbHero.SuperPower = request.SuperPower;
 
             await _context.SaveChangesAsync();
 
