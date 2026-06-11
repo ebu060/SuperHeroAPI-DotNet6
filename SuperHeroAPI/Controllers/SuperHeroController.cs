@@ -29,7 +29,7 @@ namespace SuperHeroAPI.Controllers
             return Ok(hero);
         }
 
-[HttpPost]
+        [HttpPost]
         public async Task<ActionResult<List<SuperHero>>> AddHero(SuperHero hero)
         {
             _context.SuperHeroes.Add(hero);
@@ -38,7 +38,7 @@ namespace SuperHeroAPI.Controllers
             return Ok(await _context.SuperHeroes.ToListAsync());
         }
 
-[HttpPut]
+        [HttpPut]
         public async Task<ActionResult<List<SuperHero>>> UpdateHero(SuperHero request)
         {
             var dbHero = await _context.SuperHeroes.FindAsync(request.Id);
