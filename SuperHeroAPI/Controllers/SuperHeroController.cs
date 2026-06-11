@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SuperHeroAPI.Controllers
@@ -49,6 +49,7 @@ namespace SuperHeroAPI.Controllers
             dbHero.FirstName = request.FirstName;
             dbHero.LastName = request.LastName;
             dbHero.Place = request.Place;
+            dbHero.SuperPower = request.SuperPower;
 
             await _context.SaveChangesAsync();
 
