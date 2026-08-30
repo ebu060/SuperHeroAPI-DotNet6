@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SuperHeroAPI.Controllers
@@ -17,7 +17,7 @@ namespace SuperHeroAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<List<SuperHero>>> Get()
         {
-            return Ok(await _context.SuperHeroes.ToListAsync());
+            return Ok(await _context.SuperHeroes.Where(h => h.IsActive).ToListAsync());
         }
 
         [HttpGet("{id}")]
@@ -62,11 +62,17 @@ namespace SuperHeroAPI.Controllers
             if (dbHero == null)
                 return BadRequest("Hero not found.");
 
-            _context.SuperHeroes.Remove(dbHero);
+            dbHero.IsActive = false;
+            dbHero.DeletedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.SuperHeroes.ToListAsync());
+            return Ok(await _context.SuperHeroes.Where(h => h.IsActive).ToListAsync());
         }
 
+        [HttpGet("archived")]
+        public async Task<ActionResult<List<SuperHero>>> GetArchived()
+        {
+            return Ok(await _context.SuperHeroes.Where(h => !h.IsActive).ToListAsync());
+        }
     }
 }
