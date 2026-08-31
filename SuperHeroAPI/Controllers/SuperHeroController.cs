@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SuperHeroAPI.Controllers
@@ -29,6 +29,52 @@ namespace SuperHeroAPI.Controllers
             return Ok(hero);
         }
 
+        [HttpGet("paged")]
+        public async Task<ActionResult<PagedResult<SuperHero>>> GetPaged(
+            int page = 1,
+            int pageSize = 10,
+            string? universe = null,
+            int? minPower = null,
+            string? sortBy = null)
+        {
+            var query = _context.SuperHeroes.AsQueryable();
+
+            if (!string.IsNullOrEmpty(universe))
+                query = query.Where(h => h.Team != null && h.Team.Universe == universe);
+
+            if (minPower.HasValue)
+                query = query.Where(h => h.PowerLevel >= minPower.Value);
+
+            switch (sortBy?.ToLower())
+            {
+                case "power_desc":
+                    query = query.OrderByDescending(h => h.PowerLevel);
+                    break;
+                case "power_asc":
+                    query = query.OrderBy(h => h.PowerLevel);
+                    break;
+                default:
+                    query = query.OrderBy(h => h.Id);
+                    break;
+            }
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var result = new PagedResult<SuperHero>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = page,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
+
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<ActionResult<List<SuperHero>>> AddHero(SuperHero hero)
         {
@@ -49,6 +95,9 @@ namespace SuperHeroAPI.Controllers
             dbHero.FirstName = request.FirstName;
             dbHero.LastName = request.LastName;
             dbHero.Place = request.Place;
+            dbHero.TeamId = request.TeamId;
+            dbHero.PowerLevel = request.PowerLevel;
+            dbHero.MissionsCompleted = request.MissionsCompleted;
 
             await _context.SaveChangesAsync();
 
