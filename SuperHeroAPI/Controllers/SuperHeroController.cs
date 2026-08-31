@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace SuperHeroAPI.Controllers
 {
@@ -68,5 +69,58 @@ namespace SuperHeroAPI.Controllers
             return Ok(await _context.SuperHeroes.ToListAsync());
         }
 
+        [HttpGet("paged")]
+        public async Task<ActionResult<object>> GetPaged(
+            int page = 1,
+            int pageSize = 10,
+            string? universe = null,
+            int? minPower = null,
+            string? sortBy = null)
+        {
+            var query = _context.SuperHeroes.AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(universe))
+            {
+                query = query.Where(h => h.Team != null && h.Team.Universe == universe);
+            }
+
+            if (minPower.HasValue)
+            {
+                query = query.Where(h => h.PowerLevel >= minPower.Value);
+            }
+
+            // Apply sorting
+            switch (sortBy?.ToLower())
+            {
+                case "power_desc":
+                    query = query.OrderByDescending(h => h.PowerLevel);
+                    break;
+                case "power_asc":
+                    query = query.OrderBy(h => h.PowerLevel);
+                    break;
+                default:
+                    query = query.OrderBy(h => h.Id);
+                    break;
+            }
+
+            // Calculate pagination
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            // Apply paging
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                items = items,
+                totalCount = totalCount,
+                pageNumber = page,
+                totalPages = totalPages
+            });
+        }
     }
 }
