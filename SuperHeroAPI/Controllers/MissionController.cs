@@ -77,7 +77,7 @@ namespace SuperHeroAPI.Controllers
                 return BadRequest("Mission not found.");
 
             using var transaction = await _context.Database.BeginTransactionAsync();
-            
+
             try
             {
                 // Set status to "Completed"

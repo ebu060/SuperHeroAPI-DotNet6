@@ -17,13 +17,13 @@ namespace SuperHeroAPI.Controllers
         public async Task<ActionResult<List<Team>>> Get()
         {
             var teams = await _context.Teams.ToListAsync();
-            
+
             // Add hero count for each team
             foreach (var team in teams)
             {
                 team.Heroes = team.Heroes.Where(h => h.TeamId == team.Id).ToList();
             }
-            
+
             return Ok(teams);
         }
 
